@@ -2,16 +2,14 @@ name: app-build-action
 #推送Tag时触发
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "v*"
+
 jobs:
   build-mac-ios-android:
     runs-on: macos-latest
     permissions:
       contents: write
     steps:
-      #签出代码 
+      #签出代码
       - uses: actions/checkout@v4
         with:
           ref: master
@@ -29,20 +27,20 @@ jobs:
           echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> simple_live_app/android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> simple_live_app/android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> simple_live_app/android/key.properties
-     
+
       #设置JAVA环境
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: "17"
           cache: 'gradle'
-      
+
       #设置Flutter
       - name: Flutter action
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.x'
-          cache: true 
+          cache: true
 
       # 打开MAC Desktop支持
       - name: Enable Flutter Desktop
@@ -67,7 +65,7 @@ jobs:
         run: |
           cd simple_live_app
           flutter build apk --release --split-per-abi
-      
+
       #上传APK至Artifacts
       - name: Upload APK to Artifacts
         uses: actions/upload-artifact@v4
@@ -83,7 +81,7 @@ jobs:
         run: |
           cd simple_live_app
           flutter build ios --release --no-codesign
-      
+
       #创建未签名ipa
       - name: Create IPA
         run: |
@@ -93,7 +91,7 @@ jobs:
           cd build/ios/iphoneos/
           zip -q -r ios_no_sign.ipa Payload
           cd ../../..
-      
+
       #上传IPA至Artifacts
       - name: Upload IPA to Artifacts
         uses: actions/upload-artifact@v4
@@ -101,7 +99,7 @@ jobs:
           name: ios
           path: |
             simple_live_app/build/ios/iphoneos/ios_no_sign.ipa
-      
+
       # 打包MAC
       - name: Build MacOS
         run: |
