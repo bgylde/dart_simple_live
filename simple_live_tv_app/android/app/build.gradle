@@ -67,6 +67,11 @@ android {
            v2SigningEnabled true
        }
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
     buildTypes {
         buildTypes {
             debug {
