@@ -54,6 +54,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   var online = 0.obs;
   var followed = false.obs;
   var liveStatus = false.obs;
+  var showRightLayout = false.obs; // 右边栏控制变量
   RxList<LiveSuperChatMessage> superChats = RxList<LiveSuperChatMessage>();
 
   /// 滚动控制
@@ -129,7 +130,6 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
       disableAutoScroll.value = true;
     }
   }
-
   /// 初始化自动关闭倒计时
   void initAutoExit() {
     if (AppSettingsController.instance.autoExitEnable.value) {
@@ -562,6 +562,11 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     DBService.instance.deleteFollow(id);
     followed.value = false;
     EventBus.instance.emit(Constant.kUpdateFollow, id);
+  }
+
+  // 显示、隐藏右边栏
+  void toggleRightLayout() {
+    showRightLayout.toggle();
   }
 
   void share() {
