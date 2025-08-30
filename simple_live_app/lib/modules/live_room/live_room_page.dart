@@ -114,16 +114,17 @@ class LiveRoomPage extends GetView<LiveRoomController> {
   Widget buildPageUI() {
     return OrientationBuilder(
       builder: (context, orientation) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Obx(
-              () => Text(controller.detail.value?.title ?? "直播间"),
-            ),
-            actions: buildAppbarActions(context),
+        return Obx(
+          () => Scaffold(
+            appBar: controller.showRightLayout.value ?
+                AppBar(
+                  title: Text(controller.detail.value?.title ?? "直播间"),
+                  actions: buildAppbarActions(context),
+                ) : null,
+            body: orientation == Orientation.portrait
+                ? buildPhoneUI(context)
+                : buildTabletUI(context),
           ),
-          body: orientation == Orientation.portrait
-              ? buildPhoneUI(context)
-              : buildTabletUI(context),
         );
       },
     );
@@ -152,109 +153,110 @@ class LiveRoomPage extends GetView<LiveRoomController> {
               Expanded(
                 child: buildMediaPlayer(),
               ),
-              Obx(() => controller.showRightLayout.value
-                ? Container()
-                : SizedBox(
-                    width: 300,
-                    child: Column(
-                      children: [
-                        buildUserProfile(context),
-                        buildMessageArea()
-                      ],
-                    ),
-                  )
+              Obx(() => controller.showRightLayout.value ?
+                SizedBox(
+                  width: 300,
+                  child: Column(
+                    children: [
+                      buildUserProfile(context),
+                      buildMessageArea()
+                    ],
+                  ),
+                ) : Container()
               ),
             ],
           ),
         ),
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            border: Border(
-              top: BorderSide(
-                color: Colors.grey.withAlpha(25),
+        Obx(() => controller.showRightLayout.value ? 
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              border: Border(
+                top: BorderSide(
+                  color: Colors.grey.withAlpha(25),
+                ),
               ),
             ),
-          ),
-          padding: AppStyle.edgeInsetsV4.copyWith(
-            bottom: AppStyle.bottomBarHeight + 4,
-          ),
-          child: Row(
-            children: [
-              TextButton.icon(
-                style: TextButton.styleFrom(
-                  textStyle: const TextStyle(fontSize: 14),
+            padding: AppStyle.edgeInsetsV4.copyWith(
+              bottom: AppStyle.bottomBarHeight + 4,
+            ),
+            child: Row(
+              children: [
+                TextButton.icon(
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 14),
+                  ),
+                  onPressed: controller.refreshRoom,
+                  icon: const Icon(Remix.refresh_line),
+                  label: const Text("刷新"),
                 ),
-                onPressed: controller.refreshRoom,
-                icon: const Icon(Remix.refresh_line),
-                label: const Text("刷新"),
-              ),
-              AppStyle.hGap4,
-              Obx(
-                () => controller.followed.value
-                    ? TextButton.icon(
-                        style: TextButton.styleFrom(
-                          textStyle: const TextStyle(fontSize: 14),
+                AppStyle.hGap4,
+                Obx(
+                  () => controller.followed.value
+                      ? TextButton.icon(
+                          style: TextButton.styleFrom(
+                            textStyle: const TextStyle(fontSize: 14),
+                          ),
+                          onPressed: controller.removeFollowUser,
+                          icon: const Icon(Remix.heart_fill),
+                          label: const Text("取消关注"),
+                        )
+                      : TextButton.icon(
+                          style: TextButton.styleFrom(
+                            textStyle: const TextStyle(fontSize: 14),
+                          ),
+                          onPressed: controller.followUser,
+                          icon: const Icon(Remix.heart_line),
+                          label: const Text("关注"),
                         ),
-                        onPressed: controller.removeFollowUser,
-                        icon: const Icon(Remix.heart_fill),
-                        label: const Text("取消关注"),
-                      )
-                    : TextButton.icon(
-                        style: TextButton.styleFrom(
-                          textStyle: const TextStyle(fontSize: 14),
-                        ),
-                        onPressed: controller.followUser,
-                        icon: const Icon(Remix.heart_line),
-                        label: const Text("关注"),
-                      ),
-              ),
-              Obx(
-                () => controller.showRightLayout.value
-                    ? TextButton.icon(
-                        style: TextButton.styleFrom(
-                          textStyle: const TextStyle(fontSize: 14),
-                        ),
-                        onPressed: controller.toggleRightLayout,
-                        icon: const Icon(Remix.rectangle_line),
-                        label: const Text("显示右边栏"),
-                      )
-                    : TextButton.icon(
-                        style: TextButton.styleFrom(
-                          textStyle: const TextStyle(fontSize: 14),
-                        ),
-                        onPressed: controller.toggleRightLayout,
-                        icon: const Icon(Remix.layout_right_line),
-                        label: const Text("隐藏右边栏"),
-                      ),
-              ),
-              const Expanded(child: Center()),
-              TextButton.icon(
-                style: TextButton.styleFrom(
-                  textStyle: const TextStyle(fontSize: 14),
                 ),
-                onPressed: controller.share,
-                icon: const Icon(Remix.share_line),
-                label: const Text("分享"),
-              ),
-              TextButton.icon(
-                style: TextButton.styleFrom(
-                  textStyle: const TextStyle(fontSize: 14),
+                Obx(
+                  () => controller.showRightLayout.value
+                      ? TextButton.icon(
+                          style: TextButton.styleFrom(
+                            textStyle: const TextStyle(fontSize: 14),
+                          ),
+                          onPressed: controller.toggleRightLayout,
+                          icon: const Icon(Remix.rectangle_line),
+                          label: const Text("显示边栏"),
+                        )
+                      : TextButton.icon(
+                          style: TextButton.styleFrom(
+                            textStyle: const TextStyle(fontSize: 14),
+                          ),
+                          onPressed: controller.toggleRightLayout,
+                          icon: const Icon(Remix.layout_right_line),
+                          label: const Text("隐藏边栏"),
+                        ),
                 ),
-                onPressed: controller.copyUrl,
-                icon: const Icon(Remix.file_copy_line),
-                label: const Text("复制链接"),
-              ),
-              TextButton.icon(
-                style: TextButton.styleFrom(
-                  textStyle: const TextStyle(fontSize: 14),
+                const Expanded(child: Center()),
+                TextButton.icon(
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 14),
+                  ),
+                  onPressed: controller.share,
+                  icon: const Icon(Remix.share_line),
+                  label: const Text("分享"),
                 ),
-                onPressed: controller.copyPlayUrl,
-                icon: const Icon(Remix.file_copy_line),
-                label: const Text("复制播放直链"),
-              ),
-            ],
-          ),
+                TextButton.icon(
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 14),
+                  ),
+                  onPressed: controller.copyUrl,
+                  icon: const Icon(Remix.file_copy_line),
+                  label: const Text("复制链接"),
+                ),
+                TextButton.icon(
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 14),
+                  ),
+                  onPressed: controller.copyPlayUrl,
+                  icon: const Icon(Remix.file_copy_line),
+                  label: const Text("复制播放直链"),
+                ),
+              ],
+            ),
+          ) : Container(),
         ),
       ],
     );
@@ -300,6 +302,30 @@ class LiveRoomPage extends GetView<LiveRoomController> {
               child: Text(
                 "未开播",
                 style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
+          ),
+        ),
+        // 在隐藏边栏时显示浮动切换按钮
+        Obx(
+          () => Visibility(
+            visible: !controller.showRightLayout.value,
+            child: Positioned(
+              top: 16,
+              right: 16,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: IconButton(
+                  onPressed: controller.toggleRightLayout,
+                  icon: const Icon(
+                    Remix.layout_right_line,
+                    color: Colors.white,
+                  ),
+                  tooltip: "显示边栏",
+                ),
               ),
             ),
           ),

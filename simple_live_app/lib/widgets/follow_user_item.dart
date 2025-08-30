@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:simple_live_app/app/app_style.dart';
-import 'package:simple_live_app/app/log.dart';
 import 'package:simple_live_app/app/sites.dart';
 import 'package:simple_live_app/models/db/follow_user.dart';
 import 'package:simple_live_app/widgets/net_image.dart';
@@ -12,11 +11,13 @@ class FollowUserItem extends StatelessWidget {
   final FollowUser item;
   final Function()? onRemove;
   final Function()? onTap;
+  final Function()? onLongPress;
   final bool playing;
   const FollowUserItem({
     required this.item,
     this.onRemove,
     this.onTap,
+    this.onLongPress,
     this.playing = false,
     Key? key,
   }) : super(key: key);
@@ -73,7 +74,8 @@ class FollowUserItem extends StatelessWidget {
           ],
         ),
       ),
-      subtitle: Row(
+      subtitle: Wrap(
+        runSpacing: 1.0,
         children: [
           Image.asset(
             site.logo,
@@ -131,7 +133,7 @@ class FollowUserItem extends StatelessWidget {
                   icon: const Icon(Remix.dislike_line),
                 )),
       onTap: onTap,
-      onLongPress: onRemove,
+      onLongPress: onLongPress,
     );
   }
 
@@ -146,7 +148,9 @@ class FollowUserItem extends StatelessWidget {
   }
 
   String formatLiveDuration(String? startTimeStampString) {
-    if (startTimeStampString == null || startTimeStampString.isEmpty || startTimeStampString == "0") {
+    if (startTimeStampString == null ||
+        startTimeStampString.isEmpty ||
+        startTimeStampString == "0") {
       return "";
     }
     try {
@@ -157,8 +161,8 @@ class FollowUserItem extends StatelessWidget {
       int hours = durationInSeconds ~/ 3600;
       int minutes = (durationInSeconds % 3600) ~/ 60;
 
-      String hourText = hours > 0 ? '$hours小时' : '';
-      String minuteText = minutes > 0 ? '$minutes分钟' : '';
+      String hourText = hours > 0 ? '${hours}小时' : '';
+      String minuteText = minutes > 0 ? '${minutes}分钟' : '';
 
       if (hours == 0 && minutes == 0) {
         return "不足1分钟";
@@ -166,7 +170,7 @@ class FollowUserItem extends StatelessWidget {
 
       return '$hourText$minuteText';
     } catch (e) {
-      Log.logPrint('格式化开播时长出错: $e');
+      print('格式化开播时长出错: $e');
       return "--小时--分钟";
     }
   }
