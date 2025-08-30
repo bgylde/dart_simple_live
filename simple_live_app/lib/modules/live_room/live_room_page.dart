@@ -217,16 +217,16 @@ class LiveRoomPage extends GetView<LiveRoomController> {
                             textStyle: const TextStyle(fontSize: 14),
                           ),
                           onPressed: controller.toggleRightLayout,
-                          icon: const Icon(Remix.rectangle_line),
-                          label: const Text("显示边栏"),
+                          icon: const Icon(Remix.layout_right_line),
+                          label: const Text("隐藏边栏"),
                         )
                       : TextButton.icon(
                           style: TextButton.styleFrom(
                             textStyle: const TextStyle(fontSize: 14),
                           ),
                           onPressed: controller.toggleRightLayout,
-                          icon: const Icon(Remix.layout_right_line),
-                          label: const Text("隐藏边栏"),
+                          icon: const Icon(Remix.rectangle_line),
+                          label: const Text("显示边栏"),
                         ),
                 ),
                 const Expanded(child: Center()),
